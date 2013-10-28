@@ -4,6 +4,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Calculates the Euclidean distance between two BOW vectors
+ * @author jgee1
+ *
+ */
 public class EuclideanDistanceSimilarityMeasure implements ISimilarityMeasure{
 
   @Override

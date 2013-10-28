@@ -25,7 +25,6 @@
 package edu.cmu.lti.f13.hw4.hw4_jgee1;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.net.URL;
 
@@ -70,9 +69,7 @@ public class VectorSpaceRetrieval {
 		long endTime=System.currentTimeMillis();
 		
 		double totalTime=(endTime-startTime)/1000.0;
-		System.out.println("Total time taken: "+totalTime);
-		
-
+		System.out.println("Total time taken: "+totalTime);		
 	}
 
 }

@@ -2,6 +2,11 @@ package edu.cmu.lti.f13.hw4.hw4_jgee1.similarity;
 
 import java.util.Map;
 
+/**
+ * Calculates similarity based on the cosine distance between two BOW vectors
+ * @author jgee1
+ *
+ */
 public class CosineSimilarityMeasure implements ISimilarityMeasure{
 
   @Override

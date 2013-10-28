@@ -2,6 +2,11 @@ package edu.cmu.lti.f13.hw4.hw4_jgee1.similarity;
 
 import java.util.Map;
 
+/**
+ * Calculates a similarity based on the Dice Coefficient between two BOW vectors.
+ * @author jgee1
+ *
+ */
 public class DiceCoefficientSimilarityMeasure implements ISimilarityMeasure {
 
   @Override

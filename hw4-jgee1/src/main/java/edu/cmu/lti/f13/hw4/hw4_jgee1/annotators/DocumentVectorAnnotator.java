@@ -24,94 +24,116 @@ import edu.cmu.lti.f13.hw4.hw4_jgee1.typesystems.Document;
 import edu.cmu.lti.f13.hw4.hw4_jgee1.typesystems.Token;
 import edu.cmu.lti.f13.hw4.hw4_jgee1.utils.Utils;
 
+/**
+ * The DocumentVectorAnnotator converts lines of text into bag-of-words (BOW)
+ * vectors
+ * 
+ * @author jgee1
+ * 
+ */
 
 public class DocumentVectorAnnotator extends JCasAnnotator_ImplBase {
 
-  private Set<String> stopwords;
+	/**
+	 * Store stopwords
+	 */
+	private Set<String> stopwords;
 
-  @Override
-  public void initialize(UimaContext aContext) throws ResourceInitializationException {
-    super.initialize(aContext);
+	/**
+	 * The initialize method loads the stopword list into memory
+	 */
+	@Override
+	public void initialize(UimaContext aContext)
+			throws ResourceInitializationException {
+		super.initialize(aContext);
 
-    // load stopword list
-    this.stopwords = new HashSet<String>();
+		// load stopword list
+		this.stopwords = new HashSet<String>();
+		URL stopwordLocation = DocumentVectorAnnotator.class
+				.getResource("/stopwords.txt");
 
-    URL stopwordLocation = DocumentVectorAnnotator.class.getResource("/stopwords.txt");
+		if (stopwordLocation == null) {
+			System.err
+					.println("Could not find a stopword list. Proceeding without one.");
+		} else {
+			BufferedReader br;
+			try {
+				br = new BufferedReader(new InputStreamReader(
+						stopwordLocation.openStream()));
+				String newLine = "";
 
-    if (stopwordLocation == null) {
-      System.err.println("Could not find a stopword list. Proceeding without one.");
-    } else {
-      BufferedReader br;
-      try {
-        br = new BufferedReader(new InputStreamReader(stopwordLocation.openStream()));
-        String newLine = "";
+				while ((newLine = br.readLine()) != null) {
+					if (newLine.startsWith("#")) {
+						continue;
+					}
+					stopwords.add(newLine.trim());
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 
-        while ((newLine = br.readLine()) != null) {
-          if (newLine.startsWith("#")) {
-            continue;
-          }
-          stopwords.add(newLine.trim());
-        }
-      } catch (IOException e1) {
-        // TODO Auto-generated catch block
-        e1.printStackTrace();
-      }
+		}
 
-    }
+	}
 
-  }
+	/**
+	 * Add a BOW vector to each Document Annotation
+	 */
+	@Override
+	public void process(JCas jcas) throws AnalysisEngineProcessException {
 
-  @Override
-  public void process(JCas jcas) throws AnalysisEngineProcessException {
+		FSIterator<Annotation> iter = jcas.getAnnotationIndex().iterator();
+		if (iter.isValid()) {
+			iter.moveToNext();
+			Document doc = (Document) iter.get();
+			createTermFreqVector(jcas, doc);
+		}
 
-    FSIterator<Annotation> iter = jcas.getAnnotationIndex().iterator();
-    if (iter.isValid()) {
-      iter.moveToNext();
-      Document doc = (Document) iter.get();
-      createTermFreqVector(jcas, doc);
-    }
+	}
 
-  }
+	/**
+	 * Create a BOW term frequency vector from each line of text, and add it to
+	 * the Document Annotation
+	 * 
+	 * @param jcas
+	 * @param doc
+	 */
 
-  /**
-   * 
-   * @param jcas
-   * @param doc
-   */
+	private void createTermFreqVector(JCas jcas, Document doc) {
 
-  private void createTermFreqVector(JCas jcas, Document doc) {
+		// ignore case
+		String docText = doc.getText().toLowerCase();
+		
+		// Tokenize on all non-word symbols (special cases for apostrophes and
+		// hyphens)
+		String[] tokens = docText.split("[\\W&&[^'-]]");
 
-    String docText = doc.getText().toLowerCase();
-    String[] whiteSpaceTokens=docText.split("[\\W&&[^'-]]");
-  
-    Map<String,Integer> counts=new HashMap<String,Integer>();
-    
-    for(String w:whiteSpaceTokens)
-    {
-      if(w.trim().length()<1 || this.stopwords.contains(w))
-      {
-        continue;
-      }
-      if(counts.containsKey(w))
-      {
-        counts.put(w, counts.get(w)+1);
-      }
-      else
-      {
-        counts.put(w, 1);
-      }  
-    }
-    
-    List<Token> tokenList=new ArrayList<Token>();
-    for(Entry<String,Integer> termFreq: counts.entrySet())
-    {
-      Token token=new Token(jcas);
-      token.setText(termFreq.getKey());
-      token.setFrequency(termFreq.getValue());
-      tokenList.add(token);
-    }
-    doc.setTokenList(Utils.fromCollectionToFSList(jcas, tokenList));
-    
-    doc.addToIndexes();
-  }
+		Map<String, Integer> counts = new HashMap<String, Integer>();
+
+		for (String w : tokens) {
+			// Ignore empty strings and stopwords
+			if (w.trim().length() < 1 || this.stopwords.contains(w)) {
+				continue;
+			}
+			if (counts.containsKey(w)) {
+				// increment word count
+				counts.put(w, counts.get(w) + 1);
+			} else {
+				counts.put(w, 1);
+			}
+		}
+
+		// store word counts as TokenList in Document Annotation
+		List<Token> tokenList = new ArrayList<Token>();
+		for (Entry<String, Integer> termFreq : counts.entrySet()) {
+			Token token = new Token(jcas);
+			token.setText(termFreq.getKey());
+			token.setFrequency(termFreq.getValue());
+			tokenList.add(token);
+			token.addToIndexes();
+		}
+		doc.setTokenList(Utils.fromCollectionToFSList(jcas, tokenList));
+
+		doc.addToIndexes();
+	}
 }
