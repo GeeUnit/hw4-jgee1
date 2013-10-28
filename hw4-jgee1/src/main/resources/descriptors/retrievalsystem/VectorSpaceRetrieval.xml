@@ -15,7 +15,7 @@
   </delegateAnalysisEngineSpecifiers>
   <analysisEngineMetaData>
     <name>DocumentRetrieval</name>
-    <description/>
+    <description>Aggregate engine which evaluates a set of query-answer sets.</description>
     <version/>
     <vendor/>
     <configurationParameters/>

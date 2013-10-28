@@ -5,7 +5,7 @@
   <annotatorImplementationName>edu.cmu.lti.f13.hw4.hw4_jgee1.collectionreaders.DocumentReader</annotatorImplementationName>
   <analysisEngineMetaData>
     <name>DocumentReader</name>
-    <description/>
+    <description>Creates Document Annotations containing query ID and relevance from TSV input.</description>
     <version>1.0</version>
     <vendor/>
     <configurationParameters/>

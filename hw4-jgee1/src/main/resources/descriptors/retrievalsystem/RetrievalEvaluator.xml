@@ -5,15 +5,11 @@
   <annotatorImplementationName>edu.cmu.lti.f13.hw4.hw4_jgee1.casconsumers.RetrievalEvaluator</annotatorImplementationName>
   <analysisEngineMetaData>
     <name>RetrievalEvaluator</name>
-    <description/>
+    <description>Calculates the MRR for a set of given queries.</description>
     <version>1.0</version>
     <vendor/>
-     <configurationParameters>
-      
-   </configurationParameters>
-    <configurationParameterSettings>
-      
-    </configurationParameterSettings>
+     <configurationParameters/>
+    <configurationParameterSettings/>
     <typeSystemDescription>
       <imports>            
         <import location="../typesystems/VectorSpaceTypes.xml"/>
