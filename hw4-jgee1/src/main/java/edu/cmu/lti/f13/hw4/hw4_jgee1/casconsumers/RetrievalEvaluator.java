@@ -39,7 +39,7 @@ public class RetrievalEvaluator extends CasConsumer_ImplBase {
 	 * Similarity classname. All similarity implementations can be found in the
 	 * edu.cmu.lti.f13.hw4.hw4_jgee1.similarity package.
 	 */
-	public String SIMILARITY_MEASURE = "edu.cmu.lti.f13.hw4.hw4_jgee1.similarity.EuclideanDistanceSimilarityMeasure";
+	public String SIMILARITY_MEASURE = "edu.cmu.lti.f13.hw4.hw4_jgee1.similarity.CosineSimilarityMeasure";
 
 	/**
 	 * query id number
@@ -180,7 +180,7 @@ public class RetrievalEvaluator extends CasConsumer_ImplBase {
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
-
+		
 		// Begin scoring all answers against the corresponding query.
 		for (Entry<Integer, Integer> query : this.queryIndices.entrySet()) {
 
@@ -213,8 +213,7 @@ public class RetrievalEvaluator extends CasConsumer_ImplBase {
 			List<Integer> answerIndices = this.answerIndices
 					.get(query.getKey());
 
-			double highScore = 0D;
-
+			
 			for (Integer index : answerIndices) {
 
 				// Compute an similarity score for each answer against the
@@ -223,15 +222,12 @@ public class RetrievalEvaluator extends CasConsumer_ImplBase {
 						this.tokensList.get(query.getValue()),
 						this.tokensList.get(index));
 
-				if (answerScore > highScore) {
-					highScore = answerScore;
-				}
 				// If a wrong answer has a better score, lower the rank
 				if (answerScore > goldStandardScore) {
 					goldStandardRank++;
 				}
 			}
-
+			
 			ranks.add(goldStandardRank);
 			System.out.println("Score: " + goldStandardScore + "\trank="
 					+ goldStandardRank + "\trel="
@@ -239,6 +235,7 @@ public class RetrievalEvaluator extends CasConsumer_ImplBase {
 					+ this.qIdList.get(goldStandardIndex) + " sent"
 					+ (goldStandardIndex + 1));
 		}
+		
 		// Compute MRR
 		double metric_mrr = compute_mrr(ranks);
 		System.out.println(" (MRR) Mean Reciprocal Rank ::" + metric_mrr);

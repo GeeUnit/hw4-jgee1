@@ -19,6 +19,7 @@ import org.apache.uima.cas.FSIterator;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
+import org.tartarus.snowball.ext.PorterStemmer;
 
 import edu.cmu.lti.f13.hw4.hw4_jgee1.typesystems.Document;
 import edu.cmu.lti.f13.hw4.hw4_jgee1.typesystems.Token;
@@ -110,11 +111,19 @@ public class DocumentVectorAnnotator extends JCasAnnotator_ImplBase {
 
 		Map<String, Integer> counts = new HashMap<String, Integer>();
 
+		PorterStemmer stemmer=new PorterStemmer();
+		
 		for (String w : tokens) {
 			// Ignore empty strings and stopwords
 			if (w.trim().length() < 1 || this.stopwords.contains(w)) {
 				continue;
 			}
+			
+			//Stem each token
+			stemmer.setCurrent(w);
+			stemmer.stem();
+			w=stemmer.getCurrent();
+			
 			if (counts.containsKey(w)) {
 				// increment word count
 				counts.put(w, counts.get(w) + 1);
